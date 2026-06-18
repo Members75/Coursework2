@@ -1,35 +1,40 @@
 package skypro_examination.coursework2.ExamineService;
 
-import org.apache.coyote.BadRequestException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import skypro_examination.coursework2.Question.Question;
 import skypro_examination.coursework2.QuestionService.QuestionService;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-public class ExaminerServiceImpl {
+@Service
+public class ExaminerServiceImpl implements ExaminerService {
+
     private final QuestionService questionService;
 
+    @Autowired
     public ExaminerServiceImpl(QuestionService questionService) {
         this.questionService = questionService;
     }
 
-    public Set<Question> getQuestions(int amount) throws BadRequestException {
-        if (amount <= 0) {
-            throw new BadRequestException("Amount must be positive");
-        }
+    @Override
+    public Collection<Question> getQuestions(int amount) {
+        List<Question> result = new ArrayList<>();
+        Set<Integer> usedIndices = new HashSet<>();
 
-        Set<Question> result = new HashSet<>();
-        Set<Question> allQuestions = questionService.getAll();
+        int totalQuestions = questionService.getAllQuestions().size();
 
-        if (amount > allQuestions.size()) {
-            throw new BadRequestException("Not enough questions available");
+        if (amount > totalQuestions) {
+            throw new IllegalArgumentException("Запрошено больше вопросов, чем доступно в базе");
         }
 
         while (result.size() < amount) {
-            Question random = questionService.getRandomQuestion();
-            if (random != null) {
-                result.add(random);
+            int randomIndex = new Random().nextInt(totalQuestions);
+
+            if (!usedIndices.contains(randomIndex)) {
+                Question randomQuestion = questionService.getRandomQuestion();
+                result.add(randomQuestion);
+                usedIndices.add(randomIndex);
             }
         }
 

@@ -2,12 +2,16 @@ package skypro_examination.coursework2.QuestionService;
 
 import skypro_examination.coursework2.Question.Question;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.List;
 
 public interface QuestionService {
-    void add(String question, String answer);
-    void add(Question question);
-    void remove(Question question);
-    Set<Question> getAll();
+    void addQuestion(Question question);
+    void removeQuestion(Question question);
+    List<Question> getAllQuestions();
     Question getRandomQuestion();
+
+    void remove(Question question);
+
+    Collection<Question> getAll();
 }
